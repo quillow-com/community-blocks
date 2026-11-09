@@ -1,5 +1,6 @@
 node_modules/
 dist/
+workers/catalog/.wrangler/
 package-lock.json
 examples/hello-world/package/runtime.js
 blocks/*/package/runtime.js
