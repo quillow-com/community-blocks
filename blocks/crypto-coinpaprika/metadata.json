@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "crypto-coinpaprika",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Live cryptocurrency prices, 24-hour changes and optional price history from CoinPaprika, with a configurable coin and quote currency.",
   "author": {
     "name": "Ilya Suhodolskiy",
