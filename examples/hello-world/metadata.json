@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "slug": "hello-world",
+  "version": "0.0.0",
+  "description": "A small, responsive starter that follows the Quillow theme.",
+  "author": {
+    "name": "Quillow",
+    "github": "quillow-com"
+  },
+  "license": "MIT",
+  "tags": [
+    "starter"
+  ],
+  "screenshots": [
+    "screenshots/small.png",
+    "screenshots/medium.png",
+    "screenshots/large.png"
+  ]
+}

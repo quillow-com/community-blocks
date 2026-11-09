@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/v17.3.0/schemas/config.json",
+  "release-type": "simple",
+  "draft": true,
+  "force-tag-creation": true,
+  "include-component-in-tag": true,
+  "include-v-in-tag": true,
+  "tag-separator": "-",
+  "separate-pull-requests": true,
+  "sequential-calls": true,
+  "changelog-sections": [
+    {
+      "type": "feat",
+      "section": "Features"
+    },
+    {
+      "type": "fix",
+      "section": "Bug Fixes"
+    },
+    {
+      "type": "perf",
+      "section": "Performance"
+    },
+    {
+      "type": "refactor",
+      "section": "Refactoring"
+    },
+    {
+      "type": "docs",
+      "section": "Documentation"
+    },
+    {
+      "type": "chore",
+      "section": "Maintenance"
+    }
+  ],
+  "packages": {}
+}

@@ -1,0 +1,74 @@
+name: Release blocks and catalog
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Optional block tag to retry (for example my-widget-v1.0.0)
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: community-catalog
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'quillow-com/custom-blocks' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: write
+    env:
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.15.0'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - name: Read registered components
+        id: components
+        run: npm run check:releases
+      - name: Create release PRs and tagged drafts
+        id: release
+        if: steps.components.outputs.has_packages == 'true'
+        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4.4.1 / release-please 17.3.0
+        with:
+          token: ${{ github.token }}
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      - name: Dispatch read-only checks for bot-created PRs
+        if: steps.components.outputs.has_packages == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_OUTPUTS_JSON: ${{ toJSON(steps.release.outputs) }}
+        run: node scripts/dispatch-checks.mjs
+      # GITHUB_TOKEN-created tags/releases do not start another workflow. Fetch the
+      # newly created tags and package them here, never from the current main tree.
+      - name: Fetch new release tags
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          clean: false # Preserve the already installed, ignored node_modules/.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Publish immutable ZIPs and then the catalog snapshot
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_OUTPUTS_JSON: ${{ toJSON(steps.release.outputs) }}
+          RETRY_TAG: ${{ inputs.tag }}
+        run: npm run publish:catalog

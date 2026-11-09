@@ -1,0 +1,9 @@
+node_modules/
+dist/
+package-lock.json
+examples/hello-world/package/runtime.js
+blocks/*/package/runtime.js
+**/THIRD_PARTY_NOTICES
+**/CHANGELOG.md
+# release-please preserves compact formatting when the initial manifest is {}.
+.release-please-manifest.json

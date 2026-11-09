@@ -1,0 +1,65 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color: var(--quillow-text-color, #24212a);
+  background: var(--quillow-surface-color, #fff);
+  font-family: var(--quillow-typography, system-ui, sans-serif);
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 20px;
+  line-height: 1.15;
+}
+
+p {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+button {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--quillow-accent-text-color, #fff);
+  background: var(--quillow-accent-color, #7544ef);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+html[data-quillow-size='1:1'] p {
+  display: none;
+}
+
+@media (max-height: 180px) and (max-width: 200px) {
+  html:not([data-quillow-size]) p {
+    display: none;
+  }
+}
