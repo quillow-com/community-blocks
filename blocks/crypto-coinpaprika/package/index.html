@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1"
+    />
+    <title>Crypto Price · CoinPaprika</title>
+    <link
+      rel="stylesheet"
+      href="./style.css"
+    />
+  </head>
+  <body>
+    <main class="card">
+      <div
+        id="screen"
+        class="screen"
+        data-kind="loading"
+        role="status"
+        aria-live="polite"
+      >
+        <div
+          id="loading-skeleton"
+          class="skeleton-card"
+          aria-label="Loading cryptocurrency price"
+        >
+          <header class="headline">
+            <span class="skeleton-shape skeleton-icon"></span>
+            <span class="identity skeleton-identity"
+              ><span class="skeleton-shape skeleton-title"></span
+              ><span class="skeleton-shape skeleton-subtitle"></span
+            ></span>
+            <span class="skeleton-shape skeleton-pill"></span>
+          </header>
+          <section class="summary">
+            <span class="skeleton-shape skeleton-price"></span
+            ><span class="skeleton-shape skeleton-change"></span>
+          </section>
+          <section
+            class="chart-region skeleton-chart"
+            aria-hidden="true"
+          >
+            <svg
+              viewBox="0 0 320 110"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M0 80 C25 83 33 45 59 65 S92 89 118 52 S153 49 178 57 S208 35 231 42 S265 65 286 25 S310 37 320 15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+            </svg>
+          </section>
+          <section
+            class="metrics skeleton-metrics"
+            aria-hidden="true"
+          >
+            <div>
+              <span class="skeleton-shape"></span
+              ><span class="skeleton-shape"></span>
+            </div>
+            <div>
+              <span class="skeleton-shape"></span
+              ><span class="skeleton-shape"></span>
+            </div>
+            <div>
+              <span class="skeleton-shape"></span
+              ><span class="skeleton-shape"></span>
+            </div>
+            <div>
+              <span class="skeleton-shape"></span
+              ><span class="skeleton-shape"></span>
+            </div>
+          </section>
+        </div>
+        <div
+          class="screen-body"
+          id="screen-message"
+        >
+          <div
+            class="screen-mark"
+            aria-hidden="true"
+          >
+            ↗
+          </div>
+          <h2 id="screen-title"></h2>
+          <p id="screen-detail"></p>
+          <button
+            type="button"
+            id="open-editor"
+            class="config-button"
+            hidden
+          >
+            Choose pair <span aria-hidden="true">↗</span>
+          </button>
+          <p
+            class="editor-hint"
+            id="editor-hint"
+            hidden
+          ></p>
+        </div>
+      </div>
+      <div
+        id="content"
+        hidden
+      >
+        <header class="headline">
+          <div
+            id="coin-icon"
+            class="coin-icon"
+            aria-hidden="true"
+          ></div>
+          <div class="identity">
+            <h1 id="ticker"></h1>
+            <p id="coin-subtitle"></p>
+          </div>
+          <span
+            id="source-pill"
+            class="pill"
+          ></span>
+        </header>
+        <section
+          class="summary"
+          aria-live="polite"
+        >
+          <div
+            class="price"
+            id="price"
+          >
+            —
+          </div>
+          <div
+            class="delta muted"
+            id="delta"
+          >
+            Loading quote…
+          </div>
+        </section>
+        <section
+          class="chart-region empty"
+          aria-label="Last 24 hours price history"
+        >
+          <svg
+            id="chart"
+            role="img"
+            aria-label="Last 24 hours price history"
+            viewBox="0 0 600 200"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient
+                id="fill-grad"
+                x1="0"
+                x2="0"
+                y1="0"
+                y2="1"
+              >
+                <stop
+                  offset="0"
+                  stop-color="var(--chart)"
+                  stop-opacity=".22"
+                />
+                <stop
+                  offset="1"
+                  stop-color="var(--chart)"
+                  stop-opacity="0"
+                />
+              </linearGradient>
+            </defs>
+            <path
+              id="area"
+              fill="url(#fill-grad)"
+            />
+            <path
+              id="line"
+              fill="none"
+              stroke="var(--chart)"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
+          <span
+            class="no-history"
+            id="no-history"
+            >Price history unavailable</span
+          >
+        </section>
+        <section class="metrics">
+          <div><span>Vol</span><strong id="volume">—</strong></div>
+          <div><span>Mkt Cap</span><strong id="cap">—</strong></div>
+          <div><span>High</span><strong id="high">—</strong></div>
+          <div><span>Low</span><strong id="low">—</strong></div>
+        </section>
+        <div
+          class="state"
+          id="state"
+          role="status"
+        >
+          Loading price…
+        </div>
+        <div class="attribution">Powered by CoinPaprika</div>
+      </div>
+    </main>
+    <script
+      type="module"
+      src="./app.js"
+    ></script>
+  </body>
+</html>

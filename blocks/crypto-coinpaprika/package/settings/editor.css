@@ -1,0 +1,130 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--quillow-surface-color, #fff);
+  color: var(--quillow-text-color, #171820);
+  font-family: var(--quillow-typography, ui-sans-serif, system-ui, sans-serif);
+}
+html {
+  --crypto-muted: color-mix(
+    in srgb,
+    var(--quillow-text-color, #171820) 65%,
+    transparent
+  );
+  --crypto-panel: color-mix(
+    in srgb,
+    var(--quillow-surface-color, #fff) 92%,
+    var(--quillow-text-color, #171820)
+  );
+  --crypto-border: color-mix(
+    in srgb,
+    var(--quillow-text-color, #171820) 20%,
+    transparent
+  );
+}
+main {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 24px 20px 36px;
+}
+h1 {
+  font-size: 24px;
+  margin: 0 0 4px;
+  letter-spacing: -0.04em;
+}
+header p {
+  margin: 0 0 24px;
+  color: var(--crypto-muted);
+  font-size: 14px;
+}
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 550;
+  margin: 0 0 14px;
+}
+select {
+  font: inherit;
+  font-size: 15px;
+  min-height: 44px;
+  width: 100%;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: inherit;
+  background: var(--crypto-panel);
+  border: 1px solid var(--crypto-border);
+}
+.notice {
+  background: var(--crypto-panel);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--crypto-muted);
+  margin: 0 0 20px;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--quillow-accent-color, #171820);
+  color: var(--quillow-accent-text-color, #fff);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+button.secondary {
+  background: var(--crypto-panel);
+  color: var(--quillow-text-color, #171820);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+select:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--quillow-accent-color, #7789ee);
+  outline-offset: 2px;
+}
+#status {
+  font-size: 13px;
+  color: var(--crypto-muted);
+  min-height: 20px;
+  margin: 18px 0 0;
+}
+@media (max-width: 460px) {
+  main {
+    padding: 20px 16px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .actions {
+    flex-direction: column;
+  }
+}

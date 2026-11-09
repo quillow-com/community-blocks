@@ -1,0 +1,697 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+html {
+  --crypto-muted: color-mix(
+    in srgb,
+    var(--quillow-text-color, #15151b) 58%,
+    transparent
+  );
+  --crypto-panel: color-mix(
+    in srgb,
+    var(--quillow-surface-color, #fff) 92%,
+    var(--quillow-text-color, #15151b)
+  );
+  --crypto-border: color-mix(
+    in srgb,
+    var(--quillow-text-color, #15151b) 14%,
+    transparent
+  );
+  font-family: var(
+    --quillow-typography,
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    sans-serif
+  );
+  color: var(--quillow-text-color, #15151b);
+  background: var(--quillow-surface-color, #fff);
+}
+body {
+  color: inherit;
+  background: inherit;
+}
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0;
+}
+.headline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.coin-icon {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f7931a;
+  color: #fff;
+  font-size: 25px;
+  font-weight: 600;
+}
+.identity {
+  min-width: 0;
+}
+.identity h1 {
+  font-size: 20px;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  font-weight: 600;
+  margin: 0;
+}
+.identity p {
+  font-size: 12px;
+  color: var(--crypto-muted);
+  margin: 4px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pill {
+  margin-left: auto;
+  color: var(--crypto-muted);
+  font-size: 9px;
+  letter-spacing: 0.025em;
+  padding: 0;
+  border: 0;
+  font-weight: 600;
+}
+.summary {
+  margin-top: 15px;
+  min-width: 0;
+}
+.price {
+  font-size: 28px;
+  font-weight: 560;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.delta {
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.positive {
+  color: #16c75c;
+}
+.negative {
+  color: #ed5363;
+}
+.muted {
+  color: var(--crypto-muted);
+}
+.chart-region {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  margin: 8px 0 6px;
+  overflow: hidden;
+}
+.chart-region svg {
+  width: 100%;
+  height: 100%;
+}
+.no-history {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--crypto-muted);
+  font-size: 10px;
+  text-align: center;
+}
+.chart-region.empty svg {
+  display: none;
+}
+.chart-region.empty .no-history {
+  display: flex;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  flex: none;
+  padding-bottom: 8px;
+  margin-bottom: 32px;
+}
+.metrics div {
+  display: flex;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 5px;
+}
+.metrics span {
+  color: var(--crypto-muted);
+}
+.metrics strong {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.state {
+  position: absolute;
+  bottom: 4px;
+  left: 16px;
+  right: 16px;
+  font-size: 9px;
+  color: var(--crypto-muted);
+  text-align: center;
+  pointer-events: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+  max-height: 32px;
+  overflow: hidden;
+}
+.state:empty {
+  display: none;
+}
+.attribution {
+  position: absolute;
+  right: 16px;
+  bottom: 18px;
+  color: var(--crypto-muted);
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+html[data-quillow-size='1:1'] .card {
+  padding: 12px;
+}
+html[data-quillow-size='1:1'] .coin-icon {
+  width: 35px;
+  height: 35px;
+  flex-basis: 35px;
+  font-size: 20px;
+}
+html[data-quillow-size='1:1'] .identity p,
+html[data-quillow-size='1:1'] .chart-region,
+html[data-quillow-size='1:1'] .metrics {
+  display: none;
+}
+html[data-quillow-size='1:1'] .identity h1 {
+  font-size: 17px;
+}
+html[data-quillow-size='1:1'] .summary {
+  margin-top: auto;
+  margin-bottom: 16px;
+}
+html[data-quillow-size='1:1'] .price {
+  font-size: 24px;
+}
+html[data-quillow-size='1:1'] .delta {
+  font-size: 13px;
+}
+html[data-quillow-size='1:1'] .state {
+  display: none;
+}
+html[data-quillow-size='1:1'] .attribution {
+  bottom: 5px;
+  right: 12px;
+  font-size: 7px;
+}
+
+html[data-quillow-size='2:1'] .card {
+  padding: 13px 16px;
+}
+html[data-quillow-size='2:1'] .headline {
+  position: absolute;
+  top: 13px;
+  left: 16px;
+  right: 16px;
+}
+html[data-quillow-size='2:1'] .coin-icon {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  font-size: 21px;
+}
+html[data-quillow-size='2:1'] .identity h1 {
+  font-size: 17px;
+}
+html[data-quillow-size='2:1'] .summary {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  max-width: 49%;
+  margin: 0;
+}
+html[data-quillow-size='2:1'] .price {
+  font-size: 23px;
+}
+html[data-quillow-size='2:1'] .delta {
+  font-size: 12px;
+}
+html[data-quillow-size='2:1'] .chart-region {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 46%;
+  height: 62px;
+  margin: 0;
+}
+html[data-quillow-size='2:1'] .metrics {
+  display: none;
+}
+html[data-quillow-size='2:1'] .state {
+  display: none;
+}
+html[data-quillow-size='2:1'] .attribution {
+  bottom: 5px;
+  right: 14px;
+  font-size: 7px;
+}
+
+html[data-quillow-size='2:2'] .card {
+  padding: 16px;
+}
+html[data-quillow-size='2:2'] .summary {
+  margin-top: 20px;
+}
+html[data-quillow-size='2:2'] .price {
+  font-size: 30px;
+}
+html[data-quillow-size='2:2'] .chart-region {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+html[data-quillow-size='2:2'] .attribution {
+  bottom: 20px;
+}
+html[data-quillow-size='2:2'] .state {
+  bottom: 5px;
+}
+
+@media (max-width: 220px) and (max-height: 220px) {
+  :root:not([data-quillow-size]) .card {
+    padding: 12px;
+  }
+  :root:not([data-quillow-size]) .coin-icon {
+    width: 35px;
+    height: 35px;
+    flex-basis: 35px;
+  }
+  :root:not([data-quillow-size]) .identity p,
+  :root:not([data-quillow-size]) .chart-region,
+  :root:not([data-quillow-size]) .metrics,
+  :root:not([data-quillow-size]) .state {
+    display: none;
+  }
+  :root:not([data-quillow-size]) .summary {
+    margin-top: auto;
+    margin-bottom: 16px;
+  }
+  :root:not([data-quillow-size]) .price {
+    font-size: 24px;
+  }
+  :root:not([data-quillow-size]) .attribution {
+    bottom: 5px;
+    right: 12px;
+    font-size: 7px;
+  }
+}
+@media (min-width: 280px) and (max-height: 220px) {
+  :root:not([data-quillow-size]) .card {
+    padding: 13px 16px;
+  }
+  :root:not([data-quillow-size]) .headline {
+    position: absolute;
+    top: 13px;
+    left: 16px;
+    right: 16px;
+  }
+  :root:not([data-quillow-size]) .coin-icon {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+  :root:not([data-quillow-size]) .summary {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    max-width: 49%;
+    margin: 0;
+  }
+  :root:not([data-quillow-size]) .price {
+    font-size: 23px;
+  }
+  :root:not([data-quillow-size]) .delta {
+    font-size: 12px;
+  }
+  :root:not([data-quillow-size]) .chart-region {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 46%;
+    height: 62px;
+    margin: 0;
+  }
+  :root:not([data-quillow-size]) .metrics {
+    display: none;
+  }
+  :root:not([data-quillow-size]) .state {
+    display: none;
+  }
+  :root:not([data-quillow-size]) .attribution {
+    bottom: 5px;
+    right: 14px;
+    font-size: 7px;
+  }
+}
+
+/* No price is displayed until a valid API response exists. */
+[hidden] {
+  display: none !important;
+}
+#content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 0;
+}
+.screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  text-align: center;
+}
+.screen-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 240px;
+  gap: 7px;
+}
+.screen h2 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+.screen p {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--crypto-muted);
+  margin: 0;
+}
+.screen-mark {
+  height: 40px;
+  width: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--crypto-panel);
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+html[data-quillow-size='1:1'] .screen {
+  padding: 10px;
+}
+html[data-quillow-size='1:1'] .screen-mark {
+  display: none;
+}
+html[data-quillow-size='1:1'] .screen h2 {
+  font-size: 13px;
+}
+html[data-quillow-size='1:1'] .screen p {
+  font-size: 10px;
+  line-height: 1.25;
+}
+html[data-quillow-size='1:1'] .screen-body {
+  gap: 4px;
+}
+@media (max-width: 220px) and (max-height: 220px) {
+  .screen-body {
+    gap: 4px;
+  }
+  .screen h2 {
+    font-size: 13px;
+  }
+  .screen p {
+    font-size: 10px;
+  }
+  .screen-mark {
+    display: none;
+  }
+}
+
+/* Skeleton data is decorative and never presented as a market quote. */
+.screen[data-kind='loading'] {
+  display: block;
+  padding: 0;
+  text-align: left;
+}
+.skeleton-card {
+  height: 100%;
+  min-width: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.skeleton-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  flex: 1;
+}
+.skeleton-shape {
+  display: block;
+  flex: none;
+  border-radius: 6px;
+  background: var(--crypto-panel);
+  background-image: linear-gradient(
+    105deg,
+    transparent 25%,
+    rgba(160, 160, 170, 0.14) 45%,
+    rgba(160, 160, 170, 0.25) 50%,
+    rgba(160, 160, 170, 0.14) 55%,
+    transparent 75%
+  );
+  background-size: 220% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+.skeleton-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+}
+.skeleton-title {
+  height: 17px;
+  width: 72px;
+}
+.skeleton-subtitle {
+  height: 11px;
+  width: 98px;
+}
+.skeleton-pill {
+  height: 14px;
+  width: 36px;
+  margin-left: auto;
+}
+.skeleton-price {
+  height: 29px;
+  width: 70%;
+  max-width: 196px;
+  border-radius: 7px;
+}
+.skeleton-change {
+  height: 14px;
+  width: 49%;
+  max-width: 126px;
+  margin-top: 9px;
+}
+.skeleton-chart {
+  color: var(--crypto-border);
+  opacity: 0.75;
+}
+.skeleton-chart svg {
+  width: 100%;
+  height: 100%;
+}
+.skeleton-metrics div .skeleton-shape:first-child {
+  width: 28px;
+  height: 10px;
+}
+.skeleton-metrics div .skeleton-shape:last-child {
+  width: 55px;
+  height: 10px;
+}
+.skeleton-metrics div {
+  align-items: center;
+}
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+html[data-quillow-size='1:1'] .skeleton-card {
+  padding: 12px;
+}
+html[data-quillow-size='1:1'] .skeleton-icon {
+  height: 35px;
+  width: 35px;
+}
+html[data-quillow-size='1:1'] .skeleton-title {
+  width: 58px;
+  height: 15px;
+}
+html[data-quillow-size='1:1'] .skeleton-subtitle,
+html[data-quillow-size='1:1'] .skeleton-pill,
+html[data-quillow-size='1:1'] .skeleton-chart,
+html[data-quillow-size='1:1'] .skeleton-metrics {
+  display: none;
+}
+html[data-quillow-size='1:1'] .skeleton-price {
+  height: 24px;
+  width: 100%;
+}
+html[data-quillow-size='1:1'] .skeleton-change {
+  height: 12px;
+  width: 82%;
+}
+html[data-quillow-size='2:1'] .skeleton-card {
+  padding: 13px 16px;
+}
+html[data-quillow-size='2:1'] .skeleton-icon {
+  width: 38px;
+  height: 38px;
+}
+html[data-quillow-size='2:1'] .skeleton-price {
+  height: 23px;
+  width: 100%;
+}
+html[data-quillow-size='2:1'] .skeleton-change {
+  height: 12px;
+  width: 80%;
+}
+@media (max-width: 220px) and (max-height: 220px) {
+  :root:not([data-quillow-size]) .skeleton-card {
+    padding: 12px;
+  }
+  :root:not([data-quillow-size]) .skeleton-icon {
+    width: 35px;
+    height: 35px;
+  }
+  :root:not([data-quillow-size]) .skeleton-subtitle,
+  :root:not([data-quillow-size]) .skeleton-pill,
+  :root:not([data-quillow-size]) .skeleton-chart,
+  :root:not([data-quillow-size]) .skeleton-metrics {
+    display: none;
+  }
+}
+@media (min-width: 280px) and (max-height: 220px) {
+  :root:not([data-quillow-size]) .skeleton-card {
+    padding: 13px 16px;
+  }
+  :root:not([data-quillow-size]) .skeleton-icon {
+    width: 38px;
+    height: 38px;
+  }
+  :root:not([data-quillow-size]) .skeleton-metrics {
+    display: none;
+  }
+}
+
+.config-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 14px;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--quillow-accent-color, #181b24);
+  color: var(--quillow-accent-text-color, #fff);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.16s;
+}
+.config-button:hover {
+  opacity: 0.85;
+}
+.config-button:focus-visible {
+  outline: 3px solid var(--quillow-text-color, #333);
+  outline-offset: 3px;
+}
+.config-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.editor-hint {
+  max-width: 232px;
+  color: var(--crypto-muted) !important;
+  font-size: 10px !important;
+  margin-top: 3px !important;
+}
+html[data-quillow-size='1:1'] .config-button {
+  min-height: 29px;
+  padding: 5px 10px;
+  font-size: 10px;
+  margin-top: 3px;
+}
+html[data-quillow-size='1:1'] .editor-hint {
+  display: none !important;
+}
+@media (max-width: 220px) and (max-height: 220px) {
+  .config-button {
+    min-height: 29px;
+    padding: 5px 10px;
+    font-size: 10px;
+    margin-top: 3px;
+  }
+  .editor-hint {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .skeleton-shape {
+    animation: none !important;
+    transition: none !important;
+  }
+}
