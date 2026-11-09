@@ -34,5 +34,18 @@
       "section": "Maintenance"
     }
   ],
-  "packages": {}
+  "packages": {
+    "blocks/crypto-coinpaprika": {
+      "component": "crypto-coinpaprika",
+      "package-name": "crypto-coinpaprika",
+      "initial-version": "1.0.0",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "metadata.json",
+          "jsonpath": "$.version"
+        }
+      ]
+    }
+  }
 }

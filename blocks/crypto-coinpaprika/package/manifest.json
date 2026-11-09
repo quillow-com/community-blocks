@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "name": "Crypto Price · CoinPaprika",
+  "entrypoint": "index.html",
+  "editor": {
+    "entrypoint": "settings/editor.html"
+  },
+  "network": {
+    "allowedOrigins": ["https://api.coinpaprika.com"]
+  }
+}

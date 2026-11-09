@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1"
+    />
+    <title>Crypto settings</title>
+    <link
+      rel="stylesheet"
+      href="./editor.css"
+    />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Crypto Price</h1>
+        <p>Choose the market pair displayed in the block.</p>
+      </header>
+      <fieldset
+        id="fields"
+        disabled
+      >
+        <div class="grid">
+          <label
+            >Cryptocurrency<select
+              id="base"
+              required
+            >
+              <option
+                value=""
+                selected
+                disabled
+              >
+                Select a coin
+              </option>
+              <option>BTC</option>
+              <option>ETH</option>
+              <option>SOL</option>
+              <option>DOGE</option>
+              <option>ADA</option>
+              <option>XRP</option>
+              <option>LTC</option>
+              <option>AVAX</option>
+              <option>DOT</option>
+              <option>LINK</option>
+            </select></label
+          >
+          <label
+            >Quote currency<select id="quote">
+              <option>USD</option>
+              <option>EUR</option>
+              <option>GBP</option>
+              <option>JPY</option>
+              <option>AUD</option>
+              <option>CAD</option>
+            </select></label
+          >
+        </div>
+        <p class="notice">
+          Prices and hourly history from CoinPaprika only. History may be
+          unavailable for some pairs or API plans. Refreshes approximately every
+          2 minutes while visible. Not financial advice.
+        </p>
+        <div class="actions">
+          <button
+            id="save"
+            type="button"
+          >
+            Save pair</button
+          ><button
+            id="reload"
+            type="button"
+            class="secondary"
+          >
+            Reload saved
+          </button>
+        </div>
+      </fieldset>
+      <p
+        id="status"
+        role="status"
+      >
+        Connecting to Quillow…
+      </p>
+    </main>
+    <script
+      type="module"
+      src="./editor.js"
+    ></script>
+  </body>
+</html>
