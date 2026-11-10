@@ -1,81 +1,15 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import {
-  cacheSeconds,
-  catalogUrl,
-  createCatalogWorker,
-  maxCatalogBytes,
-} from '../src/catalog.mjs'
+import { cacheSeconds, catalogUrl, maxCatalogBytes } from '../src/catalog.mjs'
 
-const commit = 'a'.repeat(40)
+import { commit, prepared, record } from './helpers.mjs'
 
 test('the runtime entrypoint exposes only the default handler', async () => {
   const entry = await import('../src/index.mjs')
   assert.deepEqual(Object.keys(entry), ['default'])
   assert.equal(typeof entry.default.fetch, 'function')
 })
-const record = () => ({
-  schemaVersion: 1,
-  repository: 'quillow-com/custom-blocks',
-  channel: 'released',
-  blocks: [
-    {
-      slug: 'crypto-coinpaprika',
-      version: '1.0.0',
-      sourceCommit: commit,
-      name: 'Crypto Price · CoinPaprika',
-      description: 'Live cryptocurrency prices.',
-      author: { name: 'Ilya Suhodolskiy', github: 'suhodolskiy' },
-      screenshots: ['small', 'medium', 'large'].map(
-        (name) =>
-          `https://raw.githubusercontent.com/quillow-com/custom-blocks/${commit}/blocks/crypto-coinpaprika/screenshots/${name}.png`
-      ),
-    },
-  ],
-})
-
-function prepared(fetch = async () => Response.json(record()), options = {}) {
-  const stored = new Map()
-  const calls = []
-  const tasks = []
-  const cache = {
-    async match(request) {
-      return stored.get(request.url)?.clone()
-    },
-    async put(request, response) {
-      const bytes = await response.arrayBuffer()
-      stored.set(
-        request.url,
-        new Response(bytes, { headers: response.headers })
-      )
-    },
-  }
-  const worker = createCatalogWorker({
-    fetch: async (...args) => {
-      calls.push(args)
-      return fetch(...args)
-    },
-    cache: () => cache,
-    ...options,
-  })
-  const context = {
-    waitUntil(task) {
-      tasks.push(task)
-    },
-  }
-  return {
-    calls,
-    stored,
-    cache,
-    request: (
-      request = new Request('https://community-blocks.quillow.com/catalog.json')
-    ) => worker.fetch(request, {}, context),
-    async flush() {
-      await Promise.all(tasks)
-    },
-  }
-}
 
 test('serves the fixed released catalog with JSON/CORS headers, bounds and a stable ETag', async () => {
   const state = prepared()

@@ -82,7 +82,7 @@ to all three sizes. See [the block contract](docs/block-contract.md).
 - [Contribution guide](CONTRIBUTING.md)
 - [Metadata and package contract](docs/block-contract.md)
 - [Releases, catalog format and first-time setup](docs/publication.md)
-- [Cloudflare catalog endpoint and deployment](workers/catalog/README.md)
+- [Cloudflare catalog/ZIP endpoints and deployment](workers/catalog/README.md)
 - [Security model](SECURITY.md)
 - [Authoring skill](https://github.com/quillow-com/skills)
 - [Custom Block SDK](https://github.com/quillow-com/custom-block-sdk)

@@ -9,7 +9,7 @@
 - Published ZIPs are immutable. Author PRs leave versions unchanged; release-please bumps each block in a separate release PR. Never replace release assets.
 - New blocks start at 0.0.0; run `npm run sync:releases` after adding/removing entries. Keep metadata.version, version.txt and the release manifest synchronized.
 - Package only tagged static snapshots for publication. Build the public catalog from released block.json/ZIP assets, never unreleased main files.
-- The read-only Cloudflare endpoint lives in workers/catalog/. It serves only the fixed released catalog; never turn it into an arbitrary URL proxy. Its deployment is explicit and separate from block releases.
+- The read-only Cloudflare endpoint lives in workers/catalog/. It serves only the fixed released catalog and exact catalog-listed ZIPs, verified against their size and SHA-256. Never turn it into an arbitrary URL proxy or bypass the upload API's ZIP validation. Its deployment is explicit and separate from block releases.
 - PR workflows must have no secrets or write permissions. Do not use `pull_request_target` to run contributor code.
 - Keep SDK and host security boundaries intact. Do not promise that code review or archive validation proves a widget safe.
 - Use English Conventional Commit titles, such as `feat(blocks): add weather widget`.
