@@ -12,6 +12,7 @@ import {
   workspace,
 } from './fixtures.mjs'
 import { buildCatalog, sha256 } from '../scripts/lib/catalog.mjs'
+import { legacyRepository, repository } from '../scripts/lib/metadata.mjs'
 import {
   collectReleasedCatalog,
   publishCatalog,
@@ -50,6 +51,131 @@ async function indexFor(options) {
   const catalog = await collectReleasedCatalog(options)
   const bytes = Buffer.from(JSON.stringify(catalog, null, 2) + '\n')
   return { catalog, tag: `catalog-${sha256(bytes)}` }
+}
+
+async function legacyRelease(options, draft = false) {
+  const { entry, zip } = options.releases.get('hello-world-v1.0.0')
+  const record = Buffer.from(
+    JSON.stringify(
+      {
+        schemaVersion: 1,
+        repository,
+        sourceCommit: entry.sourceCommit,
+        block: entry,
+      },
+      null,
+      2
+    ).replaceAll(repository, legacyRepository) + '\n'
+  )
+  const release = await options.github.getRelease(entry.releaseTag)
+  await options.github.upload(release, entry.filename, zip)
+  const asset = await options.github.upload(release, 'block.json', record)
+  options.github.releases.get(entry.releaseTag).draft = draft
+  options.github.writes.length = 0
+  return { asset, record, zip, entry }
+}
+
+test('renaming builds a canonical catalog from legacy releases without rewriting or rebuilding their assets', async (t) => {
+  const options = await prepared(t)
+  const legacy = await legacyRelease(options)
+  options.tags = []
+  options.loadRelease = () => {
+    throw new Error('Existing releases must not be rebuilt')
+  }
+  await publishCatalog(options)
+  const { catalog, tag } = await indexFor(options)
+  assert.equal(catalog.repository, 'quillow-com/community-blocks')
+  assert.deepEqual(catalog.blocks, [legacy.entry])
+  assert.deepEqual(options.github.writes, [
+    ['create', tag],
+    ['upload', tag, 'catalog.json'],
+    ['publish', tag, true],
+  ])
+  assert.deepEqual(
+    await options.github.download(legacy.asset, 64 * 1024),
+    legacy.record
+  )
+  assert.match(legacy.record.toString(), /quillow-com\/custom-blocks/)
+  options.github.writes.length = 0
+  await publishCatalog(options)
+  assert.deepEqual(options.github.writes, [['publish', tag, true]])
+})
+
+for (const draft of [false, true]) {
+  test(`renaming preserves a legacy ${draft ? 'draft' : 'published'} block record during an explicit retry`, async (t) => {
+    const options = await prepared(t)
+    const legacy = await legacyRelease(options, draft)
+    await publishCatalog(options)
+    assert.deepEqual(
+      await options.github.download(legacy.asset, 64 * 1024),
+      legacy.record
+    )
+    assert.deepEqual((await indexFor(options)).catalog.blocks, [legacy.entry])
+    assert.ok(
+      options.github.writes.every(
+        ([type, tag]) => type !== 'upload' || tag.startsWith('catalog-')
+      )
+    )
+    if (draft)
+      assert.equal(
+        options.github.releases.get(legacy.entry.releaseTag).draft,
+        false
+      )
+  })
+}
+
+for (const [name, mutate] of [
+  [
+    'foreign repository',
+    (record) => {
+      record.repository = 'another/repo'
+    },
+  ],
+  [
+    'mixed repository URLs',
+    (record) => {
+      record.block.screenshots[0] = record.block.screenshots[0].replace(
+        legacyRepository,
+        repository
+      )
+    },
+  ],
+  [
+    'foreign source URL',
+    (record) => {
+      record.block.sourceUrl = 'https://github.com/another/repo'
+    },
+  ],
+  [
+    'foreign download URL',
+    (record) => {
+      record.block.downloadUrl = record.block.downloadUrl.replace(
+        legacyRepository,
+        'another/repo'
+      )
+    },
+  ],
+  [
+    'checksum mismatch',
+    (record) => {
+      record.block.sha256 = '0'.repeat(64)
+    },
+  ],
+]) {
+  test(`legacy release compatibility still rejects ${name}`, async (t) => {
+    const options = await prepared(t)
+    const legacy = await legacyRelease(options)
+    const record = JSON.parse(legacy.record)
+    mutate(record)
+    const bytes = Buffer.from(JSON.stringify(record))
+    options.github.data.set(legacy.asset.id, bytes)
+    options.github.releases
+      .get(legacy.entry.releaseTag)
+      .assets.find((asset) => asset.id === legacy.asset.id).size = bytes.length
+    options.tags = []
+    await assert.rejects(publishCatalog(options))
+    assert.deepEqual(options.github.writes, [])
+  })
 }
 
 test('attaches ZIP and block.json before publishing the RP draft; catalog is latest and content addressed', async (t) => {

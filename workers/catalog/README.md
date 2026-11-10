@@ -6,7 +6,8 @@ It never unpacks archives or executes block code.
 
 ## Contract
 
-- `GET /catalog.json`: fetch the fixed GitHub `releases/latest/download/catalog.json`
+- `GET /catalog.json`: fetch the fixed GitHub
+  `https://github.com/quillow-com/community-blocks/releases/latest/download/catalog.json`
   URL, validate the released envelope/entries and return JSON.
 - `HEAD /catalog.json`: the same headers without a body.
 - `GET /blocks/<slug>/<version>.zip`: return the exact ZIP listed in the current
@@ -21,7 +22,10 @@ It never unpacks archives or executes block code.
 - Each request has one 10-second deadline for catalog lookup, redirects, body reads
   and integrity checks. Catalogs are limited to 5 MiB; ZIPs to 10 MiB, matching the
   Custom Block upload limit. Only `schemaVersion: 1`, `channel: "released"` from
-  `quillow-com/custom-blocks` is served. Draft/preview catalogs are rejected.
+  `quillow-com/community-blocks` is served, with the exact historical identity
+  `quillow-com/custom-blocks` also accepted for immutable pre-rename catalogs.
+  Draft/preview catalogs and all other repositories are rejected. Screenshot and
+  ZIP URLs must match the repository named in the catalog, not a mix of both.
 - Download metadata is validated: `downloadUrl` must be the canonical GitHub release
   URL for that slug/version; `filename` and `releaseTag` must agree. The ZIP's actual
   byte count must match `zipBytes`, its SHA-256 must match `sha256`, and its first
@@ -64,6 +68,14 @@ request cancellation. This Worker does not install blocks, call the upload API o
 automatically update installed versions. An upstream/integrity error returns a
 retryable 502/504; an unknown slug/version returns 404. Errors include public CORS
 headers and `Cache-Control: no-store`; HEAD errors are bodyless too.
+
+After the repository rename, an old catalog can still list a ZIP under
+`quillow-com/custom-blocks`. Only that exact archive may redirect to the same
+release/filename under `quillow-com/community-blocks`, then to the trusted GitHub
+asset hosts. Other versions, repositories, query parameters and fragments remain
+forbidden. Redeploy this Worker after renaming GitHub; its upstream URL changes,
+but the existing Worker name and public domain stay the same. See
+[the migration steps](../../docs/publication.md#repository-rename).
 
 Cache API entries are local to a Cloudflare data center and may be evicted. There
 is no persistent mirror or stale-if-error fallback: on a cold-cache GitHub failure

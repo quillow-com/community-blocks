@@ -46,7 +46,7 @@ for (const [previous, message, expected] of [
     const github = {
       repository: {
         owner: 'quillow-com',
-        repo: 'custom-blocks',
+        repo: 'community-blocks',
         defaultBranch: 'main',
       },
       getFileJson: async (name) =>

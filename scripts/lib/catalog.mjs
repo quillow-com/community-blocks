@@ -29,6 +29,7 @@ export function catalogEntry({
   checksum,
   zipBytes,
   expandedBytes,
+  repository: entryRepository = repository,
 }) {
   const { slug, version } = metadata
   const releaseTag = `${slug}-v${version}`
@@ -45,15 +46,15 @@ export function catalogEntry({
     tags: metadata.tags,
     screenshots: metadata.screenshots.map(
       (name) =>
-        `https://raw.githubusercontent.com/${repository}/${sourceRef}/blocks/${slug}/${name}`
+        `https://raw.githubusercontent.com/${entryRepository}/${sourceRef}/blocks/${slug}/${name}`
     ),
-    sourceUrl: `https://github.com/${repository}/tree/${sourceRef}/blocks/${slug}`,
+    sourceUrl: `https://github.com/${entryRepository}/tree/${sourceRef}/blocks/${slug}`,
     manifest,
     hasEditor: !!manifest.editor,
     networkOrigins: manifest.network?.allowedOrigins ?? [],
     releaseTag,
     filename,
-    downloadUrl: `https://github.com/${repository}/releases/download/${releaseTag}/${filename}`,
+    downloadUrl: `https://github.com/${entryRepository}/releases/download/${releaseTag}/${filename}`,
     sha256: checksum,
     zipBytes,
     expandedBytes,

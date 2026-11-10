@@ -2,7 +2,7 @@
 
 ## First-time maintainer setup
 
-1. Push the initial repository to `quillow-com/custom-blocks` on `main`.
+1. Push the initial repository to `quillow-com/community-blocks` on `main`.
 2. Enable Actions and **Allow GitHub Actions to create and approve pull requests**
    in repository settings. The release job uses the built-in token with
    `contents`, `issues`, `pull-requests` and `actions: write`. No PAT, npm publishing
@@ -102,6 +102,31 @@ Prefer GitHub immutable release protection as an additional safeguard. Review ro
 scripts and dependency/workflow changes carefully: after merge they execute with
 the release job's write token. Workflows do not configure repository settings for you.
 
+## Repository rename
+
+The canonical repository is `quillow-com/community-blocks`. Releases published
+before the rename retain `quillow-com/custom-blocks` in their immutable `block.json`
+and catalog assets. Do not replace those assets or bump a block version just to
+change repository URLs.
+
+The publisher accepts only these two exact repository identities. It validates
+each historical record's original URLs, tag, source commit, archive size and
+SHA-256 before producing a new catalog with canonical `community-blocks` URLs.
+Explicit retries preserve existing record bytes, including records on interrupted
+draft releases. ZIP bytes, versions and source commits do not change.
+
+After renaming the repository in GitHub:
+
+1. Update local `origin` URLs and publish the prepared changes to upstream `main`.
+2. Run **Release blocks and catalog** on the renamed repository. This publishes a
+   new content-addressed catalog from the existing releases; old snapshots remain.
+3. Deploy the updated Worker explicitly, then rebuild/deploy the consuming app.
+   The Worker fetches the new upstream URL; its domain does not change. Both the
+   updated Worker and frontend accept an unchanged legacy catalog during migration.
+
+Do not create a new repository at the old name: GitHub's existing redirects must
+continue pointing to this repository. Historical changelogs do not need rewriting.
+
 ## Catalog format
 
 `schemaVersion: 1` wraps `repository`, `channel: "released"` and sorted `blocks`.
@@ -112,7 +137,7 @@ SHA-256 and ZIP/expanded sizes. An entry's source commit is its tagged release
 snapshot, not the current main commit. The public URL is:
 
 ```text
-https://github.com/quillow-com/custom-blocks/releases/latest/download/catalog.json
+https://github.com/quillow-com/community-blocks/releases/latest/download/catalog.json
 ```
 
 Every entry has a name, description, author name/GitHub username, and exactly three

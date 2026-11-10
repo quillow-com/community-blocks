@@ -1,4 +1,6 @@
-export const repository = 'quillow-com/custom-blocks'
+export const repository = 'quillow-com/community-blocks'
+// The last catalog published before the rename remains an immutable release.
+export const catalogRepositories = [repository, 'quillow-com/custom-blocks']
 export const catalogUrl = `https://github.com/${repository}/releases/latest/download/catalog.json`
 
 export const discard = (body) => {

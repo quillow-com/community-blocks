@@ -4,7 +4,7 @@ import test from 'node:test'
 
 import { maxArchiveBytes } from '../src/archive.mjs'
 import { cacheSeconds, catalogUrl } from '../src/catalog.mjs'
-import { checksum, prepared, record, zip } from './helpers.mjs'
+import { checksum, legacyRecord, prepared, record, zip } from './helpers.mjs'
 
 const origin = 'https://community-blocks.quillow.com'
 const archivePath = '/blocks/crypto-coinpaprika/1.0.0.zip'
@@ -24,6 +24,52 @@ const zipState = (
   }, options)
 const cachedArchives = (state) =>
   [...state.stored.keys()].filter((key) => key.includes('/blocks/'))
+
+test('legacy catalog ZIPs may redirect only to the same release under the renamed repository', async () => {
+  const legacy = legacyRecord()
+  const legacyUrl = legacy.blocks[0].downloadUrl
+  const state = zipState(
+    async (url) => {
+      if (url === legacyUrl) return Response.redirect(downloadUrl)
+      if (url === downloadUrl) return Response.redirect(assetUrl)
+      assert.equal(url, assetUrl)
+      return new Response(zip)
+    },
+    undefined,
+    () => legacy
+  )
+  const response = await state.request(request())
+  assert.equal(response.status, 200)
+  assert.deepEqual(new Uint8Array(await response.arrayBuffer()), zip)
+  assert.deepEqual(
+    state.calls.map(([url]) => url),
+    [catalogUrl, legacyUrl, downloadUrl, assetUrl]
+  )
+  await state.flush()
+})
+
+for (const location of [
+  downloadUrl.replace(
+    '/crypto-coinpaprika-v1.0.0/',
+    '/crypto-coinpaprika-v2.0.0/'
+  ),
+  downloadUrl.replace('quillow-com/community-blocks', 'another/repo'),
+  downloadUrl.replace('https:', 'http:'),
+  `${downloadUrl}?token=not-allowed`,
+  `${downloadUrl}#fragment`,
+]) {
+  test(`legacy ZIP redirects still reject an unrelated target: ${location}`, async () => {
+    const state = zipState(
+      async () => Response.redirect(location),
+      undefined,
+      legacyRecord
+    )
+    assert.equal((await state.request(request())).status, 502)
+    assert.equal(state.calls.length, 2)
+    await state.flush()
+    assert.deepEqual(cachedArchives(state), [])
+  })
+}
 
 test('serves verified ZIP bytes with safe CORS/download headers and a checksum ETag', async () => {
   const state = zipState(async (url) => {
@@ -298,11 +344,11 @@ for (const [name, change] of [
   ],
   ...[
     'https://evil.example/file.zip',
-    'http://github.com/quillow-com/custom-blocks/releases/download/crypto-coinpaprika-v1.0.0/crypto-coinpaprika-1.0.0.zip',
-    'https://user:password@github.com/quillow-com/custom-blocks/releases/download/crypto-coinpaprika-v1.0.0/crypto-coinpaprika-1.0.0.zip',
+    'http://github.com/quillow-com/community-blocks/releases/download/crypto-coinpaprika-v1.0.0/crypto-coinpaprika-1.0.0.zip',
+    'https://user:password@github.com/quillow-com/community-blocks/releases/download/crypto-coinpaprika-v1.0.0/crypto-coinpaprika-1.0.0.zip',
     `${downloadUrl}?token=not-allowed`,
     `${downloadUrl}#fragment`,
-    downloadUrl.replace('quillow-com/custom-blocks', 'another/repo'),
+    downloadUrl.replace('quillow-com/community-blocks', 'another/repo'),
     downloadUrl.replace(
       '/crypto-coinpaprika-v1.0.0/',
       '/crypto-coinpaprika-v2.0.0/'
@@ -348,12 +394,12 @@ for (const location of [
   'https://user:secret@release-assets.githubusercontent.com/file.zip',
   'https://release-assets.githubusercontent.com:444/file.zip',
   'https://release-assets.githubusercontent.com.evil.example/file.zip',
-  downloadUrl.replace('quillow-com/custom-blocks', 'another/repo'),
+  downloadUrl.replace('quillow-com/community-blocks', 'another/repo'),
   downloadUrl.replace(
     '/crypto-coinpaprika-v1.0.0/',
     '/crypto-coinpaprika-v2.0.0/'
   ),
-  `https://github.com/quillow-com/custom-blocks/releases/download/catalog-${'a'.repeat(64)}/catalog.json`,
+  `https://github.com/quillow-com/community-blocks/releases/download/catalog-${'a'.repeat(64)}/catalog.json`,
 ]) {
   test(`ZIP redirects cannot escape the selected release/assets: ${location}`, async () => {
     const state = zipState(async () => Response.redirect(location))

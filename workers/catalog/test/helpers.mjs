@@ -8,7 +8,7 @@ export const zip = new Uint8Array([0x50, 0x4b, 0x03, 0x04, 1, 2, 3, 4])
 export const checksum = createHash('sha256').update(zip).digest('hex')
 export const record = () => ({
   schemaVersion: 1,
-  repository: 'quillow-com/custom-blocks',
+  repository: 'quillow-com/community-blocks',
   channel: 'released',
   blocks: [
     {
@@ -20,17 +20,25 @@ export const record = () => ({
       author: { name: 'Ilya Suhodolskiy', github: 'suhodolskiy' },
       screenshots: ['small', 'medium', 'large'].map(
         (name) =>
-          `https://raw.githubusercontent.com/quillow-com/custom-blocks/${commit}/blocks/crypto-coinpaprika/screenshots/${name}.png`
+          `https://raw.githubusercontent.com/quillow-com/community-blocks/${commit}/blocks/crypto-coinpaprika/screenshots/${name}.png`
       ),
       filename: 'crypto-coinpaprika-1.0.0.zip',
       releaseTag: 'crypto-coinpaprika-v1.0.0',
       downloadUrl:
-        'https://github.com/quillow-com/custom-blocks/releases/download/crypto-coinpaprika-v1.0.0/crypto-coinpaprika-1.0.0.zip',
+        'https://github.com/quillow-com/community-blocks/releases/download/crypto-coinpaprika-v1.0.0/crypto-coinpaprika-1.0.0.zip',
       sha256: checksum,
       zipBytes: zip.byteLength,
     },
   ],
 })
+
+export const legacyRecord = () =>
+  JSON.parse(
+    JSON.stringify(record()).replaceAll(
+      'quillow-com/community-blocks',
+      'quillow-com/custom-blocks'
+    )
+  )
 
 export function prepared(
   fetch = async () => Response.json(record()),

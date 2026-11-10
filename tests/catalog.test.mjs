@@ -37,6 +37,7 @@ test('builds deterministic, root-layout ZIPs and commit-pinned catalog URLs', as
   const first = await buildCatalog({ root, output, sourceCommit: commit })
   const second = await buildCatalog({ root, output, sourceCommit: commit })
   assert.deepEqual(first, second)
+  assert.equal(first.repository, 'quillow-com/community-blocks')
   const entry = first.blocks[0]
   const bytes = await readFile(path.join(output, entry.filename))
   const validated = await validateArchive(bytes)
@@ -45,7 +46,7 @@ test('builds deterministic, root-layout ZIPs and commit-pinned catalog URLs', as
   assert.match(entry.sourceUrl, new RegExp(commit))
   assert.equal(
     entry.downloadUrl,
-    'https://github.com/quillow-com/custom-blocks/releases/download/hello-world-v1.0.0/hello-world-1.0.0.zip'
+    'https://github.com/quillow-com/community-blocks/releases/download/hello-world-v1.0.0/hello-world-1.0.0.zip'
   )
   assert.deepEqual(validated.files.sort(), [
     'app.mjs',
@@ -60,7 +61,7 @@ test('builds deterministic, root-layout ZIPs and commit-pinned catalog URLs', as
     entry.screenshots,
     ['small', 'medium', 'large'].map(
       (name) =>
-        `https://raw.githubusercontent.com/quillow-com/custom-blocks/${commit}/blocks/hello-world/screenshots/${name}.png`
+        `https://raw.githubusercontent.com/quillow-com/community-blocks/${commit}/blocks/hello-world/screenshots/${name}.png`
     )
   )
   assert.deepEqual(

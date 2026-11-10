@@ -3,7 +3,9 @@ import path from 'node:path'
 
 import { screenshotLayouts, validateScreenshot } from './screenshots.mjs'
 
-export const repository = 'quillow-com/custom-blocks'
+export const repository = 'quillow-com/community-blocks'
+// Published release records retain the repository name used at publication.
+export const legacyRepository = 'quillow-com/custom-blocks'
 export const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const versionPattern = /^(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})$/
 

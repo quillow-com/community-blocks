@@ -7,11 +7,11 @@ import {
 } from './archive.mjs'
 import {
   catalogUrl,
+  catalogRepositories,
   discard,
   fetchBytes,
   githubAssetRedirect,
   readBounded,
-  repository,
   sha256,
 } from './upstream.mjs'
 
@@ -38,7 +38,7 @@ export function validateCatalog(value) {
   if (
     !record(value) ||
     value.schemaVersion !== 1 ||
-    value.repository !== repository ||
+    !catalogRepositories.includes(value.repository) ||
     value.channel !== 'released' ||
     !Array.isArray(value.blocks)
   )
@@ -63,7 +63,7 @@ export function validateCatalog(value) {
     )
       throw new Error('Invalid catalog block')
     seen.add(block.slug)
-    const prefix = `https://raw.githubusercontent.com/${repository}/${block.sourceCommit}/blocks/${block.slug}/`
+    const prefix = `https://raw.githubusercontent.com/${value.repository}/${block.sourceCommit}/blocks/${block.slug}/`
     if (
       !Array.isArray(block.screenshots) ||
       block.screenshots.length !== 3 ||
@@ -79,7 +79,7 @@ export function validateCatalog(value) {
       )
     )
       throw new Error('Invalid catalog screenshots')
-    archiveDescriptor(block)
+    archiveDescriptor(block, value.repository)
   }
   return value
 }
@@ -152,7 +152,7 @@ async function getCatalog(fetchUpstream, cache, key, context, signal) {
         !url.port &&
         !url.search &&
         !url.hash &&
-        /^\/quillow-com\/custom-blocks\/releases\/download\/catalog-[a-f0-9]{64}\/catalog\.json$/.test(
+        /^\/quillow-com\/community-blocks\/releases\/download\/catalog-[a-f0-9]{64}\/catalog\.json$/.test(
           url.pathname
         )),
   })
@@ -168,8 +168,16 @@ async function getCatalog(fetchUpstream, cache, key, context, signal) {
   return { catalog, response, hit: false }
 }
 
-async function getArchive(fetchUpstream, block, cache, key, context, signal) {
-  const descriptor = archiveDescriptor(block)
+async function getArchive(
+  fetchUpstream,
+  block,
+  entryRepository,
+  cache,
+  key,
+  context,
+  signal
+) {
+  const descriptor = archiveDescriptor(block, entryRepository)
   // Internal-only cache identity. Client query parameters remain forbidden.
   key.searchParams.set('sha256', descriptor.checksum)
   key.searchParams.set('size', String(descriptor.size))
@@ -257,6 +265,7 @@ export function createCatalogWorker({
           result = await getArchive(
             fetchUpstream,
             block,
+            result.catalog.repository,
             cache,
             cacheKey(url, url.pathname),
             context,

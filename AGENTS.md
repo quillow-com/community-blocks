@@ -7,6 +7,7 @@
 - Do not execute contributor-provided build scripts or widget JavaScript during packaging.
 - Run `npm run check` and, for existing blocks, `npm run check:versions -- --base <base-commit>`.
 - Published ZIPs are immutable. Author PRs leave versions unchanged; release-please bumps each block in a separate release PR. Never replace release assets.
+- The canonical repository is quillow-com/community-blocks. Validate historical quillow-com/custom-blocks release records against their original identity, then use canonical URLs only in new catalog snapshots. Never rewrite old block.json or ZIP assets to rename the repository.
 - New blocks start at 0.0.0; run `npm run sync:releases` after adding/removing entries. Keep metadata.version, version.txt and the release manifest synchronized.
 - Package only tagged static snapshots for publication. Build the public catalog from released block.json/ZIP assets, never unreleased main files.
 - The read-only Cloudflare endpoint lives in workers/catalog/. It serves only the fixed released catalog and exact catalog-listed ZIPs, verified against their size and SHA-256. Never turn it into an arbitrary URL proxy or bypass the upload API's ZIP validation. Its deployment is explicit and separate from block releases.

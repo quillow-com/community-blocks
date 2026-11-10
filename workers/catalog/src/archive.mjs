@@ -1,5 +1,6 @@
 import {
   fetchBytes,
+  catalogRepositories,
   githubAssetRedirect,
   repository,
   sha256,
@@ -22,11 +23,14 @@ export const matchArchive = (pathname) => {
     : undefined
 }
 
-export const archiveDescriptor = (block) => {
+export const archiveDescriptor = (block, entryRepository = repository) => {
   const filename = `${block.slug}-${block.version}.zip`
   const releaseTag = `${block.slug}-v${block.version}`
-  const url = `https://github.com/${repository}/releases/download/${releaseTag}/${filename}`
+  const path = `/releases/download/${releaseTag}/${filename}`
+  const url = `https://github.com/${entryRepository}${path}`
+  const canonicalUrl = `https://github.com/${repository}${path}`
   if (
+    !catalogRepositories.includes(entryRepository) ||
     block.filename !== filename ||
     block.releaseTag !== releaseTag ||
     block.downloadUrl !== url ||
@@ -37,7 +41,13 @@ export const archiveDescriptor = (block) => {
     block.zipBytes > maxArchiveBytes
   )
     throw new Error('Invalid catalog archive')
-  return { url, filename, checksum: block.sha256, size: block.zipBytes }
+  return {
+    url,
+    canonicalUrl,
+    filename,
+    checksum: block.sha256,
+    size: block.zipBytes,
+  }
 }
 
 export async function loadArchive(fetchUpstream, descriptor, signal) {
@@ -46,7 +56,9 @@ export async function loadArchive(fetchUpstream, descriptor, signal) {
     limit: descriptor.size,
     accept: 'application/zip, application/octet-stream',
     allowRedirect: (url) =>
-      githubAssetRedirect(url) || url.href === descriptor.url,
+      githubAssetRedirect(url) ||
+      url.href === descriptor.url ||
+      url.href === descriptor.canonicalUrl,
   })
   // This is an integrity check, not an archive/security validator. The upload API
   // must still run its full Custom Block ZIP validation before applying a block.

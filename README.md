@@ -1,4 +1,4 @@
-# Quillow custom blocks
+# Quillow community blocks
 
 Community-built Custom Blocks for Quillow. Submit readable static widget files
 through a pull request; GitHub Actions validates them and publishes upload-ready
@@ -6,14 +6,14 @@ ZIPs after review and a separate release PR. Users do not need a build tool to i
 
 ## Install a block
 
-1. Choose a released block from the catalog or [Releases](https://github.com/quillow-com/custom-blocks/releases). Files in `blocks/` may contain unreleased changes.
+1. Choose a released block from the catalog or [Releases](https://github.com/quillow-com/community-blocks/releases). Files in `blocks/` may contain unreleased changes.
 2. Download that block's versioned `.zip` release asset.
 3. Upload the ZIP through Quillow's Custom Code control.
 
 The machine-readable catalog is available after the first successful publication:
 
 ```text
-https://github.com/quillow-com/custom-blocks/releases/latest/download/catalog.json
+https://github.com/quillow-com/community-blocks/releases/latest/download/catalog.json
 ```
 
 There are no published community entries yet. [`examples/hello-world/`](examples/hello-world/)
@@ -41,7 +41,7 @@ it, and test it in Quillow before submission. The example's local button works i
 a standalone preview; editor-grid interaction depends on Quillow's host behavior.
 
 ```text
-custom-blocks/
+community-blocks/
 ├── blocks/                    # Only these entries enter the catalog
 │   └── <slug>/
 │       ├── metadata.json

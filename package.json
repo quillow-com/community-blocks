@@ -1,5 +1,5 @@
 {
-  "name": "@quillow/custom-blocks",
+  "name": "@quillow/community-blocks",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/quillow-com/custom-blocks.git"
+    "url": "git+https://github.com/quillow-com/community-blocks.git"
   },
   "scripts": {
     "new": "node scripts/new.mjs",

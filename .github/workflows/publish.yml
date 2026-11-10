@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.repository == 'quillow-com/custom-blocks' && github.ref == 'refs/heads/main'
+    if: github.repository == 'quillow-com/community-blocks' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write

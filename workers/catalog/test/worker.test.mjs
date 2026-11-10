@@ -3,7 +3,23 @@ import test from 'node:test'
 
 import { cacheSeconds, catalogUrl, maxCatalogBytes } from '../src/catalog.mjs'
 
-import { commit, prepared, record } from './helpers.mjs'
+import { commit, legacyRecord, prepared, record } from './helpers.mjs'
+
+test('fetches only the renamed upstream and passes historical catalog bytes through unchanged', async () => {
+  assert.equal(
+    catalogUrl,
+    'https://github.com/quillow-com/community-blocks/releases/latest/download/catalog.json'
+  )
+  const bytes = JSON.stringify(legacyRecord(), null, 2) + '\n'
+  const state = prepared(async () => new Response(bytes))
+  assert.equal(await (await state.request()).text(), bytes)
+  await state.flush()
+  assert.equal(await (await state.request()).text(), bytes)
+  assert.deepEqual(
+    state.calls.map(([url]) => url),
+    [catalogUrl]
+  )
+})
 
 test('the runtime entrypoint exposes only the default handler', async () => {
   const entry = await import('../src/index.mjs')
@@ -125,7 +141,7 @@ test('preflight, unsupported paths/methods and proxy query arguments never call 
 })
 
 test('follows only repository catalog releases and trusted GitHub asset redirects', async () => {
-  const release = `https://github.com/quillow-com/custom-blocks/releases/download/catalog-${'b'.repeat(64)}/catalog.json`
+  const release = `https://github.com/quillow-com/community-blocks/releases/download/catalog-${'b'.repeat(64)}/catalog.json`
   const asset =
     'https://release-assets.githubusercontent.com/github-production-release-asset/123/example?signature=public-test'
   const state = prepared(async (url) => {
@@ -144,7 +160,7 @@ for (const location of [
   'http://release-assets.githubusercontent.com/file',
   'https://user:password@release-assets.githubusercontent.com/file',
   'https://github.com/another/repository/releases/download/catalog-test/catalog.json',
-  'https://github.com/quillow-com/custom-blocks/releases/download/preview/catalog.json',
+  'https://github.com/quillow-com/community-blocks/releases/download/preview/catalog.json',
 ]) {
   test(`rejects an untrusted redirect: ${location}`, async () => {
     const state = prepared(async () => Response.redirect(location))
@@ -157,7 +173,7 @@ for (const location of [
 test('redirect chains have a fixed bound', async () => {
   const state = prepared(async () =>
     Response.redirect(
-      `https://github.com/quillow-com/custom-blocks/releases/download/catalog-${'b'.repeat(64)}/catalog.json`
+      `https://github.com/quillow-com/community-blocks/releases/download/catalog-${'b'.repeat(64)}/catalog.json`
     )
   )
   assert.equal((await state.request()).status, 502)
@@ -196,6 +212,12 @@ for (const [name, mutate] of [
     'foreign repository',
     (value) => {
       value.repository = 'other/repo'
+    },
+  ],
+  [
+    'legacy envelope with canonical URLs',
+    (value) => {
+      value.repository = 'quillow-com/custom-blocks'
     },
   ],
   [

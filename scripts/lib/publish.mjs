@@ -7,6 +7,7 @@ import {
 import { catalogEntry, sha256 } from './catalog.mjs'
 import {
   compareVersions,
+  legacyRepository,
   parseMetadata,
   repository,
   validSlug,
@@ -46,15 +47,38 @@ async function ensureRelease(
 
 const recordLimit = 64 * 1024
 
-export async function verifyEntry(entry, zip, sourceCommit) {
+const parseReleaseRecord = (bytes) => {
+  const snapshot = JSON.parse(
+    new TextDecoder('utf8', { fatal: true }).decode(bytes)
+  )
+  if (
+    !snapshot ||
+    snapshot.schemaVersion !== 1 ||
+    ![repository, legacyRepository].includes(snapshot.repository) ||
+    typeof snapshot.sourceCommit !== 'string' ||
+    !/^[a-f0-9]{40}$/.test(snapshot.sourceCommit) ||
+    Object.keys(snapshot).sort().join(',') !==
+      'block,repository,schemaVersion,sourceCommit'
+  )
+    throw new Error('Invalid published release record')
+  return snapshot
+}
+
+export async function verifyEntry(
+  entry,
+  zip,
+  sourceCommit,
+  entryRepository = repository
+) {
   if (
     !entry ||
+    ![repository, legacyRepository].includes(entryRepository) ||
     !/^[a-f0-9]{40}$/.test(sourceCommit ?? '') ||
     entry.sourceCommit !== sourceCommit
   )
     throw new Error('Invalid release source commit')
   const { slug, version } = parseReleaseTag(entry.releaseTag)
-  const prefix = `https://raw.githubusercontent.com/${repository}/${sourceCommit}/blocks/${slug}/`
+  const prefix = `https://raw.githubusercontent.com/${entryRepository}/${sourceCommit}/blocks/${slug}/`
   if (!Array.isArray(entry.screenshots))
     throw new Error('Invalid screenshot record')
   const screenshots = entry.screenshots.map((url) => {
@@ -78,19 +102,22 @@ export async function verifyEntry(entry, zip, sourceCommit) {
   if (metadata.version !== version)
     throw new Error('Release version does not match tag')
   const archive = await validateArchive(zip)
-  const expected = catalogEntry({
+  const descriptor = {
     metadata,
     manifest: archive.manifest,
     sourceCommit,
     checksum: sha256(zip),
     zipBytes: archive.zipBytes,
     expandedBytes: archive.expandedBytes,
-  })
+  }
+  const expected = catalogEntry({ ...descriptor, repository: entryRepository })
   if (!isDeepStrictEqual(expected, entry))
     throw new Error(
       `${entry.releaseTag}: release record does not match archive or artifact identity`
     )
-  return expected
+  // Validate historical records against their original identity first. Only a
+  // newly published catalog uses canonical URLs; existing assets stay untouched.
+  return catalogEntry(descriptor)
 }
 
 function recordBytes(entry) {
@@ -126,8 +153,21 @@ async function prepareBlock(github, tag, data, mainCommit) {
     )
   if (release.draft && release.target_commitish !== entry.sourceCommit)
     throw new Error(`${tag}: draft target does not match its immutable tag`)
-  const record = recordBytes(entry)
   await verifyAsset(github, release, entry.filename, data.zip, limits.zip)
+  let record = recordBytes(entry)
+  const records = release.assets.filter((asset) => asset.name === 'block.json')
+  if (records.length === 1) {
+    record = await github.download(records[0], recordLimit)
+    const snapshot = parseReleaseRecord(record)
+    const published = await verifyEntry(
+      snapshot.block,
+      data.zip,
+      snapshot.sourceCommit,
+      snapshot.repository
+    )
+    if (!isDeepStrictEqual(published, entry))
+      throw new Error(`${tag}: published record does not match tagged source`)
+  }
   await verifyAsset(github, release, 'block.json', record, recordLimit)
   return { release, entry, record }
 }
@@ -169,19 +209,9 @@ export async function collectReleasedCatalog({
   const blocks = []
   for (const slug of [...candidates.keys()].sort()) {
     const candidate = candidates.get(slug)
-    const snapshot = JSON.parse(
-      new TextDecoder('utf8', { fatal: true }).decode(
-        await github.download(candidate.record, recordLimit)
-      )
+    const snapshot = parseReleaseRecord(
+      await github.download(candidate.record, recordLimit)
     )
-    if (
-      !snapshot ||
-      snapshot.schemaVersion !== 1 ||
-      snapshot.repository !== repository ||
-      Object.keys(snapshot).sort().join(',') !==
-        'block,repository,schemaVersion,sourceCommit'
-    )
-      throw new Error('Invalid published release record')
     if (
       (await github.resolveTagCommit(candidate.release.tag_name)) !==
         snapshot.sourceCommit ||
@@ -191,7 +221,8 @@ export async function collectReleasedCatalog({
     const entry = await verifyEntry(
       snapshot.block,
       await github.download(candidate.zip, limits.zip),
-      snapshot.sourceCommit
+      snapshot.sourceCommit,
+      snapshot.repository
     )
     if (entry.slug !== slug || entry.releaseTag !== candidate.release.tag_name)
       throw new Error('Published record component mismatch')
