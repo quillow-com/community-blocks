@@ -46,6 +46,18 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "blocks/faq-accordion": {
+      "component": "faq-accordion",
+      "package-name": "faq-accordion",
+      "initial-version": "1.0.0",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "metadata.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }
