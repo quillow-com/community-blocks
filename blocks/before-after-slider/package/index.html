@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>Before and after slider</title>
+    <link
+      rel="stylesheet"
+      href="./base.css"
+    />
+    <link
+      rel="stylesheet"
+      href="./style.css"
+    />
+    <script
+      type="module"
+      src="./app.mjs"
+    ></script>
+  </head>
+  <body>
+    <div
+      class="cmp"
+      id="cmp"
+      role="group"
+      aria-label="Image comparison"
+    >
+      <img
+        class="cmp__img cmp__after"
+        id="after"
+        alt=""
+        draggable="false"
+      />
+      <div
+        class="cmp__before-clip"
+        id="before-clip"
+      >
+        <img
+          class="cmp__img cmp__before"
+          id="before"
+          alt=""
+          draggable="false"
+        />
+      </div>
+      <span
+        class="cmp__label cmp__label--before"
+        id="label-before"
+        aria-hidden="true"
+      ></span>
+      <span
+        class="cmp__label cmp__label--after"
+        id="label-after"
+        aria-hidden="true"
+      ></span>
+      <p
+        class="cmp__note"
+        id="note"
+        hidden
+      >
+        Sample images. Add yours in block settings.
+      </p>
+      <div
+        class="cmp__line"
+        id="line"
+      >
+        <button
+          class="cmp__knob"
+          id="knob"
+          type="button"
+          role="slider"
+          aria-label="Comparison position"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="50"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M9 7l-5 5 5 5M15 7l5 5-5 5" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <noscript>This block needs JavaScript enabled.</noscript>
+  </body>
+</html>

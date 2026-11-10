@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "slug": "before-after-slider",
+  "version": "0.0.0",
+  "description": "Draggable before-and-after image comparison with horizontal or vertical direction, custom labels and keyboard control.",
+  "author": {
+    "name": "Tom",
+    "github": "tsbekkers"
+  },
+  "license": "MIT",
+  "tags": [
+    "comparison",
+    "image",
+    "slider"
+  ],
+  "screenshots": [
+    "screenshots/small.png",
+    "screenshots/medium.png",
+    "screenshots/large.png"
+  ]
+}
