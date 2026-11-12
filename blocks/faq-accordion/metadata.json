@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "faq-accordion",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Editable list of frequently asked questions that adapts from a one-question-at-a-time card to an expandable accordion.",
   "author": {
     "name": "Tom",
