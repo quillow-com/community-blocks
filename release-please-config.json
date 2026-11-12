@@ -58,6 +58,18 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "blocks/social-counter": {
+      "component": "social-counter",
+      "package-name": "social-counter",
+      "initial-version": "1.0.0",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "metadata.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }
