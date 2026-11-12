@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "slug": "social-counter",
+  "version": "0.0.0",
+  "description": "Display a follower or subscriber count for YouTube, Instagram, TikTok and other platforms, with optional profile link and compact number style.",
+  "author": {
+    "name": "Tom",
+    "github": "tsbekkers"
+  },
+  "license": "MIT",
+  "tags": [
+    "social",
+    "counter",
+    "stats"
+  ],
+  "screenshots": [
+    "screenshots/small.png",
+    "screenshots/medium.png",
+    "screenshots/large.png"
+  ]
+}

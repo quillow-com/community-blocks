@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>Social counter</title>
+    <link
+      rel="stylesheet"
+      href="./base.css"
+    />
+    <link
+      rel="stylesheet"
+      href="./style.css"
+    />
+    <script
+      type="module"
+      src="./app.mjs"
+    ></script>
+  </head>
+  <body>
+    <a
+      class="counter"
+      id="counter"
+    >
+      <header
+        class="counter__head"
+        id="logo"
+        aria-hidden="true"
+      ></header>
+      <p
+        class="counter__value"
+        id="value"
+        role="img"
+        aria-label=""
+      ></p>
+      <footer class="counter__cta">
+        <span id="cta-long"></span>
+        <span id="cta-short"></span>
+      </footer>
+    </a>
+    <noscript>This block needs JavaScript enabled.</noscript>
+  </body>
+</html>
