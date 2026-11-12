@@ -209,21 +209,26 @@ function render(focusKey, animate = false) {
     root.querySelector('.acc').scrollTop = scrollTop
   }
   if (focusKey) root.querySelector(`[data-k="${focusKey}"]`)?.focus()
+  // Each render replaces the scroll regions; subscribe once per new node.
+  for (const node of root.querySelectorAll('.scroll')) {
+    node.addEventListener('scroll', () => markClipped(node), { passive: true })
+  }
   watchClipped()
 }
 
 // Scrollbars are hidden, so mark regions with more to read (a fade at the bottom edge).
+function markClipped(node) {
+  node.classList.toggle(
+    'is-clipped',
+    node.scrollHeight > node.clientHeight + 1 &&
+      node.scrollTop + node.clientHeight < node.scrollHeight - 1
+  )
+}
+
 function watchClipped() {
-  const mark = (node) =>
-    node.classList.toggle(
-      'is-clipped',
-      node.scrollHeight > node.clientHeight + 1 &&
-        node.scrollTop + node.clientHeight < node.scrollHeight - 1
-    )
   requestAnimationFrame(() => {
     for (const node of root.querySelectorAll('.scroll')) {
-      mark(node)
-      node.addEventListener('scroll', () => mark(node), { passive: true })
+      markClipped(node)
     }
   })
 }
@@ -242,7 +247,7 @@ async function start() {
 }
 
 onSizeChange(() => {
-  if (openIndex >= 0) active = openIndex
+  if (root.dataset.size === '2:2' && openIndex >= 0) active = openIndex
   else active = Math.min(active, Math.max(0, n() - 1))
   render()
 })
