@@ -1,0 +1,151 @@
+/* Shared Quillow block foundation: host theme tokens, reset and focus styles. */
+:root {
+  color-scheme: light;
+  --qb-bg: var(--quillow-surface-color, #ffffff);
+  --qb-text: var(--quillow-text-color, #0d0d12);
+  --qb-text-muted: color-mix(in srgb, var(--qb-text) 66%, var(--qb-bg));
+  --qb-text-subtle: color-mix(in srgb, var(--qb-text) 52%, var(--qb-bg));
+  --qb-surface: color-mix(in srgb, var(--qb-text) 5%, var(--qb-bg));
+  --qb-surface-strong: color-mix(in srgb, var(--qb-text) 9%, var(--qb-bg));
+  --qb-border: color-mix(in srgb, var(--qb-text) 14%, var(--qb-bg));
+  --qb-accent: var(--quillow-accent-color, #7f51f2);
+  --qb-accent-text: var(--quillow-accent-text-color, #ffffff);
+  --qb-focus: var(--qb-accent);
+  --qb-radius: min(var(--quillow-radius, 8px), 12px);
+  --qb-font: var(
+    --quillow-typography,
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif
+  );
+  --qb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-quillow-theme='dark'] {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: var(--qb-bg);
+  color: var(--qb-text);
+  font-family: var(--qb-font);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+blockquote,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--qb-focus);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Quiet icon button used for paging controls: 40px target, plain glyph. */
+.qb-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--qb-radius);
+  background: transparent;
+  color: var(--qb-text);
+  transition:
+    background-color 150ms ease,
+    opacity 150ms ease;
+}
+
+.qb-icon-btn:hover {
+  background: var(--qb-surface);
+}
+
+.qb-icon-btn:active {
+  background: var(--qb-surface-strong);
+}
+
+.qb-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  background: transparent;
+}
+
+.qb-icon-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
