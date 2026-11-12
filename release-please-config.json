@@ -35,6 +35,18 @@
     }
   ],
   "packages": {
+    "blocks/before-after-slider": {
+      "component": "before-after-slider",
+      "package-name": "before-after-slider",
+      "initial-version": "1.0.0",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "metadata.json",
+          "jsonpath": "$.version"
+        }
+      ]
+    },
     "blocks/crypto-coinpaprika": {
       "component": "crypto-coinpaprika",
       "package-name": "crypto-coinpaprika",

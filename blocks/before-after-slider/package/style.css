@@ -1,0 +1,252 @@
+.cmp {
+  --p: 50;
+  --k: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--qb-surface);
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 0;
+}
+
+.cmp[data-orient='vertical'] {
+  cursor: ns-resize;
+  touch-action: pan-x;
+}
+
+body[data-ready] .cmp {
+  opacity: 1;
+  transition: opacity 260ms ease;
+}
+
+.cmp-error {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  color: var(--qb-text-muted);
+  text-align: center;
+}
+
+.cmp-error[hidden] {
+  display: none;
+}
+
+.cmp__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* The "before" image is revealed from the start edge up to the handle. */
+.cmp__before-clip {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--p) * 1%) 0 0);
+  will-change: clip-path;
+}
+
+.cmp[data-orient='vertical'] .cmp__before-clip {
+  clip-path: inset(0 0 calc(100% - var(--p) * 1%) 0);
+}
+
+/* Divider + handle */
+.cmp__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--p) * 1%);
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow:
+    0 0 0 0.5px rgb(0 0 0 / 0.18),
+    0 0 12px rgb(0 0 0 / 0.28);
+  pointer-events: none;
+  transition:
+    width 160ms var(--qb-ease),
+    margin-left 160ms var(--qb-ease),
+    box-shadow 200ms ease;
+  will-change: left;
+}
+
+.cmp[data-orient='vertical'] .cmp__line {
+  inset: auto 0 auto 0;
+  top: calc(var(--p) * 1%);
+  left: 0;
+  width: auto;
+  height: 2px;
+  margin: -1px 0 0;
+  transition:
+    height 160ms var(--qb-ease),
+    margin-top 160ms var(--qb-ease),
+    box-shadow 200ms ease;
+}
+
+.cmp.is-drag .cmp__line {
+  width: 3px;
+  margin-left: -1.5px;
+  box-shadow:
+    0 0 0 0.5px rgb(0 0 0 / 0.2),
+    0 0 22px rgb(0 0 0 / 0.4);
+}
+
+.cmp[data-orient='vertical'].is-drag .cmp__line {
+  width: auto;
+  height: 3px;
+  margin: -1.5px 0 0;
+}
+
+.cmp__knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #1b1b22;
+  box-shadow:
+    0 2px 10px rgb(0 0 0 / 0.28),
+    0 0 0 0.5px rgb(0 0 0 / 0.12);
+  cursor: grab;
+  pointer-events: auto;
+  transform: scale(var(--k));
+  transition:
+    transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 200ms ease;
+}
+
+.cmp.is-drag .cmp__knob {
+  --k: 1.16;
+  cursor: grabbing;
+  box-shadow:
+    0 6px 22px rgb(0 0 0 / 0.38),
+    0 0 0 0.5px rgb(0 0 0 / 0.12);
+}
+
+.cmp__knob svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 240ms var(--qb-ease);
+}
+
+.cmp.is-drag .cmp__knob svg {
+  transform: scaleX(0.82);
+}
+
+.cmp[data-orient='vertical'] .cmp__knob {
+  /* keep the 40px centre on the line */
+  top: 50%;
+}
+
+.cmp[data-orient='vertical'] .cmp__knob svg {
+  transform: rotate(90deg);
+}
+
+.cmp[data-orient='vertical'].is-drag .cmp__knob svg {
+  transform: rotate(90deg) scaleX(0.82);
+}
+
+.cmp[data-orient='vertical'] .cmp__line .cmp__knob {
+  top: 50%;
+  left: 50%;
+}
+
+.cmp__knob:focus-visible {
+  outline: 3px solid var(--qb-accent);
+  outline-offset: 3px;
+}
+
+/* Labels */
+.cmp__label {
+  position: absolute;
+  max-width: calc(50% - 20px);
+  padding: 4px 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition:
+    opacity 200ms ease,
+    transform 200ms var(--qb-ease);
+}
+
+.cmp__label--before {
+  bottom: 12px;
+  left: 12px;
+}
+
+.cmp__label--after {
+  right: 12px;
+  bottom: 12px;
+}
+
+.cmp[data-orient='vertical'] .cmp__label--before {
+  top: 12px;
+  bottom: auto;
+}
+
+.cmp[data-orient='vertical'] .cmp__label--after {
+  right: auto;
+  bottom: 12px;
+  left: 12px;
+}
+
+.cmp__label.is-hidden {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.cmp[data-labels='off'] .cmp__label,
+:root[data-quillow-size='1:1'] .cmp__label {
+  display: none;
+}
+
+/* Editor-only sample hint */
+.cmp__note {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  left: 12px;
+  padding: 6px 10px;
+  border-radius: var(--qb-radius);
+  background: rgb(0 0 0 / 0.55);
+  color: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  pointer-events: none;
+  text-align: center;
+}
+
+:root[data-quillow-size='1:1'] .cmp__note {
+  display: none;
+}
