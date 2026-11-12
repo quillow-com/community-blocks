@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "slug": "before-after-slider",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Draggable before-and-after image comparison with horizontal or vertical direction, custom labels and keyboard control.",
   "author": {
     "name": "Tom",
