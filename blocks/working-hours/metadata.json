@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "slug": "working-hours",
+  "version": "0.0.0",
+  "description": "Weekly business hours with live open/closed status, split shifts, overnight hours and special dates, calculated in the business’s time zone.",
+  "author": {
+    "name": "Ilya Suhodolskiy",
+    "github": "suhodolskiy"
+  },
+  "license": "MIT",
+  "tags": [
+    "business",
+    "hours",
+    "schedule"
+  ],
+  "screenshots": [
+    "screenshots/small.png",
+    "screenshots/medium.png",
+    "screenshots/large.png"
+  ]
+}

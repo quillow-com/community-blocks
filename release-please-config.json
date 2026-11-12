@@ -82,6 +82,18 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "blocks/working-hours": {
+      "component": "working-hours",
+      "package-name": "working-hours",
+      "initial-version": "1.0.0",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "metadata.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }
