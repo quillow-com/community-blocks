@@ -1,0 +1,284 @@
+.faq {
+  --pad: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: var(--pad);
+  opacity: 0;
+}
+
+body[data-ready] .faq {
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+
+.faq[data-size='1:1'] {
+  --pad: 12px;
+}
+
+.faq[data-size='2:2'] {
+  --pad: 20px;
+}
+
+.faq-empty {
+  margin: auto;
+  color: var(--qb-text-muted);
+  text-align: center;
+}
+
+/* ---------- shared text ---------- */
+.q {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.a {
+  color: var(--qb-text-muted);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.count {
+  color: var(--qb-text-subtle);
+  font-size: 12px;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Scroll regions fade at the bottom edge so clipped text reads as scrollable. */
+.scroll {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scrollbars are hidden; a soft fade at the edge shows there is more to read. */
+.is-clipped {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - 20px),
+    transparent
+  );
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 20px), transparent);
+}
+
+/* ---------- paged (small + medium) ---------- */
+.pager {
+  display: flex;
+  align-items: center;
+}
+
+.pager .count {
+  min-width: 36px;
+  text-align: center;
+}
+
+.view-swap {
+  animation: swap 220ms var(--qb-ease);
+}
+
+@keyframes swap {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* small */
+.small {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.small__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+.small .q {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.small .a {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.small__nav {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 40px;
+  align-items: center;
+  flex: none;
+}
+
+.flip {
+  min-width: 0;
+  height: 40px;
+  border: 0;
+  border-radius: var(--qb-radius);
+  background: transparent;
+  color: var(--qb-accent);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 150ms ease;
+}
+
+.flip:hover {
+  background: var(--qb-surface);
+}
+
+/* medium */
+.medium {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 16px;
+  min-height: 0;
+}
+
+.medium__left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.medium__left .q {
+  flex: 1;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.medium__left .pager {
+  flex: none;
+  margin-left: -10px;
+}
+
+.medium__right {
+  min-width: 0;
+  padding-left: 16px;
+  border-left: 1px solid var(--qb-border);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.medium__right .a {
+  display: block;
+}
+
+/* large */
+.large {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.large h1 {
+  flex: none;
+  padding-bottom: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+
+.acc {
+  flex: 1;
+  border-top: 1px solid var(--qb-border);
+}
+
+.acc-item + .acc-item {
+  border-top: 1px solid var(--qb-border);
+}
+
+.acc-item h2 {
+  margin: 0;
+}
+
+.acc-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
+  color: var(--qb-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.acc-q:focus-visible {
+  outline-offset: -2px;
+  border-radius: var(--qb-radius);
+}
+
+.acc-q svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: var(--qb-text-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 220ms var(--qb-ease);
+}
+
+.acc-q[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 240ms var(--qb-ease),
+    opacity 180ms ease,
+    visibility 0s linear 240ms;
+}
+
+.acc-panel.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.acc-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.acc-inner .a {
+  padding: 0 28px 14px 0;
+  font-size: 14px;
+  line-height: 20px;
+}

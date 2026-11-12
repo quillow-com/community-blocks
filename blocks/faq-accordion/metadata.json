@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "slug": "faq-accordion",
+  "version": "0.0.0",
+  "description": "Editable list of frequently asked questions that adapts from a one-question-at-a-time card to an expandable accordion.",
+  "author": {
+    "name": "Tom",
+    "github": "tsbekkers"
+  },
+  "license": "MIT",
+  "tags": [
+    "faq",
+    "accordion",
+    "content"
+  ],
+  "screenshots": [
+    "screenshots/small.png",
+    "screenshots/medium.png",
+    "screenshots/large.png"
+  ]
+}
