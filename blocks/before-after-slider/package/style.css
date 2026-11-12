@@ -23,6 +23,20 @@ body[data-ready] .cmp {
   transition: opacity 260ms ease;
 }
 
+.cmp-error {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  color: var(--qb-text-muted);
+  text-align: center;
+}
+
+.cmp-error[hidden] {
+  display: none;
+}
+
 .cmp__img {
   position: absolute;
   inset: 0;

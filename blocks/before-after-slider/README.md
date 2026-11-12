@@ -19,8 +19,9 @@ built-in default images (`default-before.jpg`, `default-after.jpg`) are shown.
 Open the block's settings (gear) to configure:
 
 - **Before image / After image:** uploaded images are resized and compressed in the
-  editor to WebP (or JPEG), at most 720 px and 60,000 characters each, to fit
+  editor to WebP (or JPEG), at most 800 px and 60,000 characters each, to fit
   Quillow's storage limit. Very fine detail may soften. Use the same framing for both.
+  Saving and swapping are disabled until image processing finishes.
 - **Show labels, Before label, After label:** up to 24 characters each. On the small
   layout a long label may be truncated.
 - **Direction:** horizontal or vertical.
@@ -42,6 +43,7 @@ Theme, font and corner style come from Quillow through the bundled SDK runtime.
 Serve `package/` over local HTTP. Standalone, without a Quillow host, the block shows
 its built-in default content and does not read or write storage. Embedded views
 need the host's storage read capability; saving settings needs owner mode.
+If storage is unavailable, the block shows an error instead of sample images.
 
 Before submitting:
 
@@ -51,10 +53,22 @@ npm run check:versions -- --base "$(git rev-parse origin/main)"
 npm run build
 ```
 
+Optional browser regression tests execute widget JavaScript in a local Chromium
+instance with a test host. They are separate from PR checks and packaging:
+
+```sh
+node --test blocks/before-after-slider/test/*.test.mjs
+```
+
+On macOS the tests use Google Chrome in `/Applications`; elsewhere they use
+`chromium`. Set `CHROME_BIN` to use another installed Chromium executable.
+
 Screenshots are standalone captures of the default content in Chromium; see
 [screenshot details](screenshots/README.md). The author tested the built ZIP in
-Quillow. The maintainer-run browser checks have not been repeated for this entry,
-and archive validation does not establish security.
+Quillow. Maintainer browser checks cover all three sizes, both directions,
+keyboard input, reduced motion, storage errors and image processing in Chromium
+with a test host, not the live Quillow application. Archive validation does not
+establish security.
 
 ## Updates and compatibility
 

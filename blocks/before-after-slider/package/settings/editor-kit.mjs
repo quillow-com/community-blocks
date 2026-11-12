@@ -466,6 +466,7 @@ export function imageField({
   maxChars,
   square = false,
   emptyText = 'No image',
+  onProcessingChange,
 }) {
   const id = nextId()
   const preview = h('div', { class: `thumb${square ? ' thumb-square' : ''}` })
@@ -483,6 +484,7 @@ export function imageField({
   )
   const remove = button('Remove', { class: 'btn btn-quiet' })
   let current = value || ''
+  let processing = false
 
   function paint() {
     preview.replaceChildren(
@@ -496,7 +498,11 @@ export function imageField({
   input.addEventListener('change', async () => {
     const file = input.files?.[0]
     input.value = ''
-    if (!file) return
+    if (!file || processing) return
+    processing = true
+    input.disabled = true
+    remove.disabled = true
+    onProcessingChange?.(true)
     note.textContent = 'Processing…'
     try {
       current = await compressImage(file, { maxDim, maxChars, square })
@@ -508,6 +514,11 @@ export function imageField({
         error instanceof ValidationError
           ? error.message
           : 'That image could not be processed.'
+    } finally {
+      processing = false
+      input.disabled = false
+      remove.disabled = false
+      onProcessingChange?.(false)
     }
   })
   remove.addEventListener('click', () => {
@@ -582,6 +593,7 @@ export function describeError(error) {
  * Standard settings-page shell: heading, form, save bar, storage lifecycle.
  *   build(values, ctx) -> { el, serialize } where serialize() returns
  *   { storageKey: stringValue } (only keys that changed or all keys) or throws ValidationError.
+ *   ctx.setBusy(boolean) blocks saving while the form prepares its values.
  */
 export async function startEditor({ root, title, description, keys, build }) {
   if (window.parent !== window) {
@@ -621,6 +633,7 @@ export async function startEditor({ root, title, description, keys, build }) {
   const entries = {}
   let locked = false
   let saving = false
+  let busy = false
   const last = {}
 
   window.addEventListener('pagehide', () => {
@@ -652,7 +665,13 @@ export async function startEditor({ root, title, description, keys, build }) {
     widget.mode === 'editor' && widget.capabilities.includes('storage.set')
   let form
   try {
-    form = build(values, { writable })
+    form = build(values, {
+      writable,
+      setBusy(value) {
+        busy = value
+        saveBtn.disabled = !writable || saving || locked || busy
+      },
+    })
   } catch (error) {
     console.error(error)
     status.textContent =
@@ -669,10 +688,10 @@ export async function startEditor({ root, title, description, keys, build }) {
   status.textContent = writable
     ? 'Changes apply after you save and close settings.'
     : 'Settings are read-only here.'
-  saveBtn.disabled = !writable
+  saveBtn.disabled = !writable || busy
 
   saveBtn.addEventListener('click', async () => {
-    if (!writable || saving || locked) return
+    if (!writable || saving || locked || busy) return
     let changes
     try {
       changes = form.serialize()
@@ -682,6 +701,7 @@ export async function startEditor({ root, title, description, keys, build }) {
       return
     }
     saving = true
+    fieldset.disabled = true
     saveBtn.disabled = true
     status.classList.remove('is-error')
     status.textContent = 'Saving…'
@@ -709,7 +729,8 @@ export async function startEditor({ root, title, description, keys, build }) {
       status.classList.add('is-error')
     } finally {
       saving = false
-      saveBtn.disabled = locked
+      fieldset.disabled = !writable
+      saveBtn.disabled = !writable || locked || busy
     }
   })
 }

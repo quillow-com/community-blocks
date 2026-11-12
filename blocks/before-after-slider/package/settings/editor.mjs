@@ -9,6 +9,7 @@ import {
   startEditor,
   switchField,
   textField,
+  ValidationError,
 } from './editor-kit.mjs'
 import { dataImage, parseJSON } from '../kit.mjs'
 import { IMAGE_MAX_CHARS, KEYS, normalize } from '../settings.mjs'
@@ -18,7 +19,7 @@ startEditor({
   title: 'Before and after slider',
   description: 'Add two images. Visitors drag the handle to compare them.',
   keys: [KEYS.settings, KEYS.before, KEYS.after],
-  build(values) {
+  build(values, { setBusy }) {
     const parsed = parseJSON(values[KEYS.settings])
     if (values[KEYS.settings] !== null && parsed === undefined)
       throw new Error('unsupported')
@@ -27,6 +28,13 @@ startEditor({
       before: dataImage(values[KEYS.before]),
       after: dataImage(values[KEYS.after]),
     }
+    const processing = new Set()
+    function updateProcessing(side, busy) {
+      if (busy) processing.add(side)
+      else processing.delete(side)
+      setBusy(processing.size > 0)
+      swap.disabled = processing.size > 0
+    }
 
     const imageOptions = { maxDim: 800, maxChars: IMAGE_MAX_CHARS }
     const before = imageField({
@@ -34,6 +42,7 @@ startEditor({
       value: images.before,
       emptyText: 'Sample',
       onChange: (v) => (images.before = v),
+      onProcessingChange: (busy) => updateProcessing('before', busy),
       ...imageOptions,
     })
     const after = imageField({
@@ -41,6 +50,7 @@ startEditor({
       value: images.after,
       emptyText: 'Sample',
       onChange: (v) => (images.after = v),
+      onProcessingChange: (busy) => updateProcessing('after', busy),
       ...imageOptions,
     })
     const swap = button('Swap images', {
@@ -110,6 +120,10 @@ startEditor({
         section('Behaviour', null, orientation.el, start.el, hint.el)
       ),
       serialize() {
+        if (processing.size)
+          throw new ValidationError(
+            'Wait for image processing to finish before saving.'
+          )
         checkSize('Before image', images.before)
         checkSize('After image', images.after)
         return {

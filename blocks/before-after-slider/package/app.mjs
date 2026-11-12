@@ -5,6 +5,7 @@ import {
   parseJSON,
   reduceMotion,
   startTheme,
+  unavailableText,
 } from './kit.mjs'
 import { KEYS, PLACEHOLDER, normalize } from './settings.mjs'
 
@@ -18,6 +19,7 @@ const reduced = reduceMotion()
 let s = normalize(null)
 let vertical = false
 let usingSample = true
+let ready = false
 
 // Motion state: 'seek' eases to `target`, 'drag' follows the pointer, 'glide' carries a flick.
 let mode = 'seek'
@@ -28,6 +30,7 @@ let raf = 0
 let lastT = 0
 let lastShown = -1
 let hintTimers = []
+let interacted = false
 let environment = 'published'
 
 const clamp = (v) => Math.min(100, Math.max(0, v))
@@ -107,12 +110,14 @@ function updateNote() {
 }
 
 function cancelHint() {
+  interacted = true
   hintTimers.forEach(clearTimeout)
   hintTimers = []
 }
 
 cmp.addEventListener('pointerdown', (event) => {
   if (
+    !ready ||
     pointerId !== null ||
     (event.pointerType === 'mouse' && event.button !== 0)
   )
@@ -148,6 +153,7 @@ cmp.addEventListener('pointermove', (event) => {
 
 function release(event) {
   if (event.pointerId !== pointerId) return
+  if (event.type === 'pointerup') target = clamp(pointerPct(event) + grabOffset)
   pointerId = null
   cmp.classList.remove('is-drag')
   // Only motion in the last ~90 ms counts: pausing before release means "place it here", not a flick.
@@ -162,12 +168,14 @@ function release(event) {
     mode = 'glide'
     run()
   } else {
+    const destination = event.type === 'pointerup' ? target : pos
     seek(
-      Math.abs(pos - target) < 1 && (pos < 4 || pos > 96)
-        ? pos < 50
+      Math.abs(destination - target) < 1 &&
+        (destination < 4 || destination > 96)
+        ? destination < 50
           ? 0
           : 100
-        : pos
+        : destination
     )
   }
 }
@@ -179,18 +187,17 @@ cmp.addEventListener('lostpointercapture', (event) => {
 
 /* ------------------------------------------------------------ keyboard */
 knob.addEventListener('keydown', (event) => {
+  if (!ready) return
   const step = event.shiftKey ? 20 : 5
   let next
   if (
     event.key === 'ArrowLeft' ||
-    event.key === 'ArrowDown' ||
-    (vertical && event.key === 'ArrowUp')
+    event.key === (vertical ? 'ArrowUp' : 'ArrowDown')
   )
     next = target - step
   else if (
     event.key === 'ArrowRight' ||
-    event.key === 'ArrowUp' ||
-    (vertical && event.key === 'ArrowDown')
+    event.key === (vertical ? 'ArrowDown' : 'ArrowUp')
   )
     next = target + step
   else if (event.key === 'PageDown') next = target - 20
@@ -205,7 +212,7 @@ knob.addEventListener('keydown', (event) => {
 
 /* ---------------------------------------------------------------- hint */
 function playHint() {
-  if (reduced || !s.hint || mode !== 'seek') return
+  if (interacted || reduced || !s.hint || mode !== 'seek') return
   const base = s.start
   const stops = [Math.min(100, base + 18), Math.max(0, base - 18), base]
   stops.forEach((value, i) =>
@@ -220,7 +227,18 @@ function setImage(img, value, fallback, alt) {
 }
 
 async function start() {
-  const { values } = await loadStored([KEYS.settings, KEYS.before, KEYS.after])
+  const { status, values, code } = await loadStored([
+    KEYS.settings,
+    KEYS.before,
+    KEYS.after,
+  ])
+  if (status === 'unavailable') {
+    cmp.hidden = true
+    $('error').textContent = unavailableText('Images', code)
+    $('error').hidden = false
+    document.body.setAttribute('data-ready', '')
+    return
+  }
   s = normalize(parseJSON(values[KEYS.settings]))
   vertical = s.orientation === 'vertical'
   cmp.dataset.orient = s.orientation
@@ -247,8 +265,11 @@ async function start() {
     Promise.all([$('before').decode(), $('after').decode()]).catch(() => {}),
     new Promise((r) => setTimeout(r, 1500)),
   ])
+  ready = true
+  knob.disabled = false
   document.body.setAttribute('data-ready', '')
-  setTimeout(playHint, 300)
+  if (!interacted && !reduced && s.hint)
+    hintTimers.push(setTimeout(playHint, 300))
 }
 
 if (window.parent !== window) {
