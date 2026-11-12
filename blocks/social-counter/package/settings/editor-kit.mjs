@@ -580,8 +580,9 @@ export function describeError(error) {
 
 /**
  * Standard settings-page shell: heading, form, save bar, storage lifecycle.
- *   build(values, ctx) -> { el, serialize } where serialize() returns
+ *   build(values, ctx) -> { el, serialize, onSaved? } where serialize() returns
  *   { storageKey: stringValue } (only keys that changed or all keys) or throws ValidationError.
+ *   onSaved(changes) receives the serialized snapshot after all saves succeed.
  */
 export async function startEditor({ root, title, description, keys, build }) {
   if (window.parent !== window) {
@@ -693,6 +694,7 @@ export async function startEditor({ root, title, description, keys, build }) {
         })
         last[key] = value
       }
+      form.onSaved?.(changes)
       status.textContent = 'Saved. Close settings to see your changes.'
     } catch (error) {
       // A failed mutation is never retried. Conflicts and uncertain writes lock the page

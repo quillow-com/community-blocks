@@ -10,7 +10,7 @@ import {
   ValidationError,
 } from './editor-kit.mjs'
 import { parseJSON } from '../kit.mjs'
-import { DEFAULTS, KEY, MAX_COUNT, PLATFORMS, normalize } from '../settings.mjs'
+import { KEY, MAX_COUNT, PLATFORMS, normalize } from '../settings.mjs'
 
 startEditor({
   root: document.getElementById('app'),
@@ -18,15 +18,8 @@ startEditor({
   description: 'Choose a platform and set the number your block shows.',
   keys: [KEY],
   build(values) {
-    const saved =
-      values[KEY] === null ? null : normalize(parseJSON(values[KEY]))
-    const s = saved ?? { ...DEFAULTS }
-    const initial = {
-      count: s.count,
-      grow: s.grow,
-      dailyMin: s.dailyMin,
-      dailyMax: s.dailyMax,
-    }
+    let saved = normalize(parseJSON(values[KEY]))
+    const s = { ...saved }
 
     const platform = selectField({
       label: 'Platform',
@@ -124,12 +117,15 @@ startEditor({
           count: Math.round(s.count),
         })
         const changedNumber =
-          out.count !== initial.count ||
-          out.grow !== initial.grow ||
-          out.dailyMin !== initial.dailyMin ||
-          out.dailyMax !== initial.dailyMax
-        out.asOf = changedNumber || !s.asOf ? Date.now() : s.asOf
+          out.count !== saved.count ||
+          out.grow !== saved.grow ||
+          out.dailyMin !== saved.dailyMin ||
+          out.dailyMax !== saved.dailyMax
+        out.asOf = changedNumber || !saved.asOf ? Date.now() : saved.asOf
         return { [KEY]: JSON.stringify(out) }
+      },
+      onSaved(values) {
+        saved = normalize(parseJSON(values[KEY]))
       },
     }
   },

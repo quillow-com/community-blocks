@@ -53,10 +53,18 @@ npm run check:versions -- --base "$(git rev-parse origin/main)"
 npm run build
 ```
 
+The optional editor regression tests execute widget JavaScript with a test host
+and DOM. They are separate from PR checks and packaging:
+
+```sh
+node --experimental-vm-modules --test blocks/social-counter/test/*.test.mjs
+```
+
 Screenshots are standalone captures of the default content in Chromium; see
 [screenshot details](screenshots/README.md). The author tested the built ZIP in
-Quillow. The maintainer-run browser checks have not been repeated for this entry,
-and archive validation does not establish security.
+Quillow. Maintainer checks cover repeated saves and growth-field visibility in
+Chromium with a test host, not the live Quillow application. Archive validation
+does not establish security.
 
 ## Updates and compatibility
 

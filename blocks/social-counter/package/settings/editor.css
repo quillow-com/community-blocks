@@ -125,6 +125,10 @@ fieldset:disabled {
   gap: 16px;
 }
 
+.grid[hidden] {
+  display: none;
+}
+
 .grid > .field {
   margin-top: 0;
 }
